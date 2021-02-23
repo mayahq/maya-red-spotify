@@ -1,0 +1,58 @@
+<script type="text/javascript">
+    RED.nodes.registerType('spotify-connect', {
+      category: 'config',
+      color: '#37B954',
+      defaults: {
+        name: { value: "spotify-connect" },
+        fastmqChannel: {value: "master" },
+        fastmqTopic: {value: "refresh" }
+      },
+      credentials: {
+            accessToken: { type: String},
+            expiryDate: { type: Number },
+            referenceId: { type: String }
+        },
+      icon: "spotify.png",
+      exportable: false,
+      label: function() {
+            if (this.name) {
+                return this.name
+            } else {
+                return "spotify-connect"
+            }
+        },
+      paletteLabel: "spotify-connect",
+      oneditsave: function() {
+        var trimFields = [
+            "accessToken"
+        ];
+        // Just in case any whitespace has crept in with the copy-paste of the fields
+        trimFields.forEach(function(field) {
+            var v = $("#node-config-input-"+field).val();
+            v = v.trim();
+            $("#node-config-input-"+field).val(v);
+
+        });
+    }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="spotify-connect">
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-name" >Name</label>
+        <input type="text" id="node-config-input-name"></input>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-accessToken">Access Token</label>
+        <input type="password" id="node-config-input-accessToken">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-fastmqChannel">FastMQ Channel</label>
+        <input type="text" id="node-config-input-fastmqChannel">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-fastmqTopic">FastMQ Topic</label>
+        <input type="text" id="node-config-input-fastmqTopic">
+    </div>
+  </div>
+</script>

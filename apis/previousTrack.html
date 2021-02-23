@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('previous-track', {
+      category: 'spotify',
+      color: '#37B954',
+      defaults: {
+        session: { value:"", type: "spotify-connect" }
+      },
+      inputs:1,
+      outputs:1,
+      icon: "spotify.png",
+      label: function() {
+          return "Previous Track";
+      },
+      paletteLabel: "Previous Track",
+    });
+</script>
+
+<script type="text/x-red" data-template-name="previous-track">
+  <div class="form-row">
+      <label for="node-input-session"><i class="fa fa-user"></i></span></label>
+      <input type="text" id="node-input-session">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="previous-track">
+</script>

@@ -1,0 +1,66 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Search', {
+      category: 'spotify',
+      color: '#37B954',
+      defaults: {
+        session: { value:"", type: "spotify-connect" },
+        query: { value: "" },
+        payloadTypeQuery: { value: "global" },
+        searchType: { value: "artist,track" },
+        payloadTypeSearchType: { value: "str" }
+      },
+      inputs:1,
+      outputs:1,
+      icon: "spotify.png",
+      label: function() {
+          return "Search";
+      },
+      paletteLabel: "Search",
+      oneditprepare: function() {
+        if (this.payloadTypeQuery === null) {
+            if (this.query === "") {
+                this.payloadTypeQuery = "date";
+            } else {
+                this.payloadTypeQuery = "str";
+            }
+        } else if (this.payloadTypeQuery === 'string' || this.payloadTypeQuery === 'none') {
+            this.payloadTypeQuery = "str";
+        }
+
+        $("#node-input-payloadTypeQuery").val(this.payloadTypeQuery);
+        $("#node-input-payloadTypeSearchType").val(this.payloadTypeSearchType);
+        $("#node-input-query").typedInput({
+            default: 'str',
+            typeField: $("#node-input-payloadTypeQuery"),
+            types:['flow','global','msg','str']
+        });
+        $("#node-input-searchType").typedInput({
+            default: 'str',
+            typeField: $("#node-input-payloadTypeSearchType"),
+            types:['flow','global','msg','str']
+        });
+        $("#node-input-query").typedInput('type',this.payloadTypeQuery);
+        $("#node-input-searchType").typedInput('type',this.payloadTypeSearchType);
+      }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Search">
+  <div class="form-row">
+    <label for="node-input-query"><i class="fa fa-tag"></i> Query</label>
+    <input type="text" id="node-input-query" style="width:70%;" placeholder="Query" />
+    <input type="hidden" id="node-input-payloadTypeQuery">
+  </div>
+  <div class="form-row">
+    <label for="node-input-searchType"><i class="fa fa-tag"></i> SearchType</label>
+    <input type="text" id="node-input-searchType" style="width:70%;" placeholder="SearchType" />
+    <input type="hidden" id="node-input-payloadTypeSearchType">
+  </div>
+  <div class="form-row">
+      <label for="node-input-session"><i class="fa fa-user"></i></span></label>
+      <input type="text" id="node-input-session">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="Search">
+</script>

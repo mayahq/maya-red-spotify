@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('toggle-playback', {
+      category: 'spotify',
+      color: '#37B954',
+      defaults: {
+        session: { value:"", type: "spotify-connect" }
+      },
+      inputs:1,
+      outputs:1,
+      icon: "spotify.png",
+      label: function() {
+          return "Toggle Playback";
+      },
+      paletteLabel: "Toggle Playback",
+    });
+</script>
+
+<script type="text/x-red" data-template-name="toggle-playback">
+  <div class="form-row">
+      <label for="node-input-session"><i class="fa fa-user"></i></span></label>
+      <input type="text" id="node-input-session">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="toggle-playback">
+</script>
