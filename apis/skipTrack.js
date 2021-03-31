@@ -42,6 +42,12 @@ module.exports = function (RED) {
           })
           .catch((err) => {
             console.log('ERROR', err.response.status, err.response.data)
+            if (err.response.data.error.reason === 'NO_ACTIVE_DEVICE') {
+              msg.errorData = {
+                reason: 'NO_ACTIVE_DEVICE',
+              }
+              node.send(msg);
+            }
             node.status({
               fill: "red",
               shape: "ring",
