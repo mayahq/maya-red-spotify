@@ -2,9 +2,8 @@ const { isNullOrUndefined } = require('util');
 
 module.exports = function (RED) {
     'use strict'
-    console.log('PLEASE')
     function SpotifyConnect(config) { 
-        console.log('WORK GODDAMIT')
+        console.log("Spotify Module Loaded")
         // the config information needs a runtime API to be set as creds
         const FastMQ = require('fastmq');
         const nodeSchedule = require("node-schedule");
@@ -35,7 +34,7 @@ module.exports = function (RED) {
             function refreshCreds (fastmqChannel, fastmqTopic, referenceId) {
                 var requestChannel;
                 // create a client with 'requestChannel' channel name and connect to server.
-                FastMQ.Client.connect('requestChannel', fastmqChannel).then((channel) => { // client connected
+                FastMQ.Client.connect('', fastmqChannel, {reconnect: false}).then((channel) => { // client connected
                     requestChannel = channel;
                     // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
                     let reqPayload = {
@@ -46,16 +45,50 @@ module.exports = function (RED) {
                     };
                     return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
                 }).then((result) => {
-                    console.log('Got response from master, data:' + result.payload.data);
+                    console.log('Got response from master, data:', result.payload.data);
                     // client channel disconnect
-
-                    
                     requestChannel.disconnect();
                 }).catch((err) => {
                     console.log('Got error:', err.stack);
+                }).finally(() => {
+                    if(requestChannel){
+                        if(!requestChannel._socket.destroyed){
+                            console.log("destroying client socket");
+                            requestChannel.disconnect();
+                        }
+                    }
                 });
             }
             nodeSchedule.scheduleJob(new Date(node.credentials.expiryDate - 5000), function () {refreshCreds(node.fastmqChannel, node.fastmqTopic, node.credentials.referenceId)})
+        }
+        // making refresh cred function accessible to all nodes for spotify
+        node.refreshCreds = (fastmqChannel, fastmqTopic, referenceId) => {
+            var requestChannel;
+                // create a client with 'requestChannel' channel name and connect to server.
+                FastMQ.Client.connect('', fastmqChannel, {reconnect: false}).then((channel) => { // client connected
+                    requestChannel = channel;
+                    // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
+                    let reqPayload = {
+                        data: {
+                            referenceId: referenceId,
+                            configNodes: ["spotify-connect"]
+                        }
+                    };
+                    return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
+                }).then((result) => {
+                    console.log('Got response from master, data:', result.payload.data);
+                    // client channel disconnect
+                    requestChannel.disconnect();
+                }).catch((err) => {
+                    console.log('Got error:', err.stack);
+                }).finally(() => {
+                    if(requestChannel){
+                        if(!requestChannel._socket.destroyed){
+                            console.log("destroying client socket");
+                            requestChannel.disconnect();
+                        }
+                    }
+                });
         }
     }
 

@@ -18,11 +18,6 @@ module.exports = function (RED) {
             repeatState = 'off'
         }
 
-        if (this.expiryDate <= Date.now()) {
-          await this.session.refreshCreds();
-          this.credentials = RED.nodes.getCredentials(config.session);
-        }
-
         node.status({
           fill: "yellow",
           shape: "dot",

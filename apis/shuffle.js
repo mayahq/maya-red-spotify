@@ -14,11 +14,6 @@ module.exports = function (RED) {
       this.on("input", async function (msg) {
         shuffleState = !shuffleState
 
-        if (this.expiryDate <= Date.now()) {
-          await this.session.refreshCreds();
-          this.credentials = RED.nodes.getCredentials(config.session);
-        }
-
         node.status({
           fill: "yellow",
           shape: "dot",
