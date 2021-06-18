@@ -58,23 +58,44 @@ module.exports = function (RED) {
 						const realName = track.name.split('(')[0].split('feat.')[0]
 						score += getSimilarityScore(query, realName)
 					}
-					return {
+
+					let images = null
+					if (track.album) {
+						images = track.album.images
+					}
+
+					const result = {
 						type: 'track',
 						artists: track.artists.map((artist) => artist.name).join(', '),
 						uri: track.uri,
 						score: score,
-						name: track.name
+						name: track.name,
+						images: images,
 					}
+
+					if (images.length > 0) {
+						result.imageUrl = images[images.length-1].url
+					}
+
+					return result
 				}))
 			}
 			if (rawRes.albums) {
 				results = results.concat(rawRes.albums.items.map((album) => {
-					return {
+					const result = {
 						type: 'album',
 						artists: album.artists.map((artist) => artist.name).join(', '),
 						uri: album.uri,
-						name: album.name
+						name: album.name,
+						images: album.images
 					}
+
+					let images = album.images
+					if (images && images.length > 0) {
+						result.imageUrl = images[images.length-1].url
+					}
+					
+					return result
 				}))
 			}
 			if (rawRes.artists) {
@@ -84,12 +105,20 @@ module.exports = function (RED) {
 						score += getSimilarityScore(query, artist.name)
 					}
 					// console.log('Artist', artist.name, score)
-					return {
+					const result = {
 						type: 'artist',
 						uri: artist.uri,
 						score: score,
-						name: artist.name
+						name: artist.name,
+						images: artist.images
 					}
+
+					let images = artist.images
+					if (images && images.length > 0) {
+						result.imageUrl = images[images.length-1].url
+					}
+					
+					return result
 				}))
 				
 			}
@@ -153,8 +182,8 @@ module.exports = function (RED) {
 					node.send(msg)
 				})
 				.catch((err) => {
-					console.log('BRUHHHHHHHHH')
-					console.log('ERROR', err.response.code, err.response.data)
+					// console.log('ERROR', err.response.code, err.response.data)
+					console.log(err)
 					node.status({
 						fill: "red",
 						shape: "ring",
