@@ -146,11 +146,6 @@ module.exports = function (RED) {
       // Retrieve the config node
       	this.on("input", async function (msg) {
 
-			if (this.expiryDate <= Date.now()) {
-				await this.session.refreshCreds();
-				this.credentials = RED.nodes.getCredentials(config.session);
-			}
-
 			const query = await getValue(this.query, this.payloadTypeQuery, msg)
 			const type = await getValue(this.searchType, this.payloadTypeSearchType, msg)
 			node.status({
