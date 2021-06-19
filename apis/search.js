@@ -132,15 +132,30 @@ module.exports = function (RED) {
 				}
 			}
 
-			// console.log(results)
-			// console.log('UNSORTED ----')
-			// results.forEach((res) => console.log(res.type, res.name, res.score))
-			// console.log('SORTED ----')
-			// results.sort(compare).forEach((res) => console.log(res.type, res.name, res.score))
 			return results
 				.filter((res) => res.score) // Sort only those results which have a score
 				.sort(compare).slice(0, NUM_RESULTS)
 				.concat(results.filter((res) => res.score === undefined))
+		}
+
+		function constructPlaylistResults(playlists) {
+			const results = playlists.map((playlist) => {
+				const res = {
+					type: 'playlist',
+					name: playlist.name,
+					uri: playlist.uri,
+					images: playlist.images,
+					imageUrl: null
+				}
+
+				if (playlist.images.length > 0) {
+					res.imageUrl = playlist.images[playlist.images.length-1].url
+				}
+
+				return res
+			})
+
+			return results
 		}
       
       // Retrieve the config node
@@ -156,11 +171,21 @@ module.exports = function (RED) {
 
 			const search = encodeURI(query)
 
-			const request = {
+			let request = {
 				method: 'GET',
 				url: `https://api.spotify.com/v1/search?q=${search}&type=${type}`,
 				headers: {
 					Authorization: `Bearer ${this.credentials.accessToken}`
+				}
+			}
+
+			if (type === 'playlist') {
+				request = {
+					method: 'GET',
+					url: `https://api.spotify.com/v1/me/playlists?limit=50`,
+					headers: {
+						Authorization: `Bearer ${this.credentials.accessToken}`
+					}
 				}
 			}
 
@@ -171,9 +196,11 @@ module.exports = function (RED) {
 						shape: "dot",
 						text: "Found"
 					})
-					// console.log('BRUHHH??????')
-					// console.log(response.data)
-					msg.searchResults = constructResults(query, response.data)
+					if (type === 'playlist') {
+						msg.searchResults = constructPlaylistResults(response.data.items)
+					} else {
+						msg.searchResults = constructResults(query, response.data)
+					}
 					node.send(msg)
 				})
 				.catch((err) => {

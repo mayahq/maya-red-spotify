@@ -39,7 +39,6 @@ module.exports = function (RED) {
               shape: "dot",
               text: "Done"
           })
-            console.log(response.data)
             node.send(msg)
           })
           .catch((err) => {
@@ -56,8 +55,6 @@ module.exports = function (RED) {
               text: `error: ${err.toString().substring(0, 10)}...`
           });
           })
-
-        console.log(msg)
       });
     }
     

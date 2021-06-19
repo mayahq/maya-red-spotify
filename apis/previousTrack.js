@@ -1,3 +1,5 @@
+const { previousTrackNative, getPlayerStateNative } = require('../utils/playerStateNative');
+
 module.exports = function (RED) {
 
     const axios = require('axios')
@@ -17,6 +19,21 @@ module.exports = function (RED) {
           text: "Playing previous track..."
         });
 
+        const playerState = getPlayerStateNative()
+        if (playerState === 'playing') {
+          const worked = previousTrackNative()
+          if (worked) {
+            node.status({
+              fill: "green",
+              shape: "dot",
+              text: "Done"
+            })
+            console.log('Previous track playing natively')
+            node.send(msg)
+            return
+          }
+        }
+
         const request = {
             method: 'POST',
             url: 'https://api.spotify.com/v1/me/player/previous',
@@ -31,8 +48,7 @@ module.exports = function (RED) {
               fill: "green",
               shape: "dot",
               text: "Done"
-          })
-            console.log(response.data)
+            })
             node.send(msg)
           })
           .catch((err) => {
@@ -51,8 +67,6 @@ module.exports = function (RED) {
               text: `error: ${err.toString().substring(0, 10)}...`
           });
           })
-
-        console.log(msg)
       });
     }
     

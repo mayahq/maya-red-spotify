@@ -1,3 +1,5 @@
+const { getPlayerStateNative, nextTrackNative } = require('../utils/playerStateNative');
+
 module.exports = function (RED) {
 
     const axios = require('axios')
@@ -17,6 +19,20 @@ module.exports = function (RED) {
           text: "Skipping track..."
         });
 
+        if (getPlayerStateNative() === 'playing') {
+          const worked = nextTrackNative()
+          if (worked) {
+            node.status({
+              fill: "green",
+              shape: "dot",
+              text: "Done"
+            })
+            console.log('Skipped natively')
+            node.send(msg)
+            return
+          }
+        }
+
         const request = {
             method: 'POST',
             url: 'https://api.spotify.com/v1/me/player/next',
@@ -31,8 +47,7 @@ module.exports = function (RED) {
               fill: "green",
               shape: "dot",
               text: "Done"
-          })
-            console.log(response.data)
+            })
             node.send(msg)
           })
           .catch((err) => {
@@ -49,8 +64,6 @@ module.exports = function (RED) {
               text: `error: ${err.toString().substring(0, 10)}...`
           });
           })
-
-        console.log(msg)
       });
     }
     
