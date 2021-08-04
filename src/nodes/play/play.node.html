@@ -1,0 +1,94 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("play", {
+        category: "Spotify",
+        color: "#37B954",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            uri: {
+                value: ""
+            },
+            payloadTypeuri: {
+                value: "str"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "../../../icons/spotify.png",
+        label: function() {
+            return this.name || "Play"
+        },
+        paletteLabel: "Play",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypeuri === null) {
+                if (this.uri === "") {
+                    this.payloadTypeuri = "date"
+                } else {
+                    this.payloadTypeuri = "str"
+                }
+            } else if (this.payloadTypeuri === 'string' || this.payloadTypeuri === 'none') {
+                this.payloadTypeuri = "str"
+            }
+
+            $("#node-input-payloadTypeuri").val(this.payloadTypeuri)
+            $("#node-input-uri").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypeuri"),
+                types: ["str", "msg", "global"]
+            })
+            $("#node-input-uri").typedInput("type", this.payloadTypeuri)
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="play">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-uri">uri</label>
+        <input type="text" id="node-input-uri"></input>
+        <input type="hidden" id="node-input-payloadTypeuri">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="play">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>

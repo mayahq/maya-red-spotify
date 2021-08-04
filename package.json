@@ -4,21 +4,22 @@
   "description": "Module to control Spotify",
   "main": "index.js",
   "dependencies": {
+    "@mayahq/module-sdk": "file:../../module-sdk",
     "axios": "^0.21.1",
     "execa": "^5.1.1",
     "fastmq": "^1.3.8",
     "node-schedule": "^2.0.0"
   },
+  "nodepath": "./src/nodes",
+  "nodeRedModuleName": "spotify",
+  "secureStorageVals": "./src/manifest.json",
   "node-red": {
     "nodes": {
-      "play": "apis/play.js",
-      "toggle-playback": "apis/togglePlayback.js",
-      "skip": "apis/skipTrack.js",
-      "previous": "apis/previousTrack.js",
-      "toggle-shuffle": "apis/shuffle.js",
-      "toggle-repeat": "apis/repeat.js",
-      "search": "apis/search.js",
-      "spotify-connect": "apis/connect.js"
+      "play": "src/nodes/play/play.node.js",
+      "search": "src/nodes/search/search.node.js",
+      "control-playback": "src/nodes/controlPlayback/controlPlayback.node.js",
+      "get-playback-state": "src/nodes/getPlaybackState/getPlaybackState.node.js",
+      "playlist": "src/nodes/playlist/playlist.node.js"
     }
   }
 }

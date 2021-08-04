@@ -1,0 +1,79 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("get-playback-state", {
+        category: "Spotify",
+        color: "#37B954",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            stateType: {
+                value: "playback"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "../../../icons/spotify.png",
+        label: function() {
+            return this.name || "Get Playback State"
+        },
+        paletteLabel: "Get Playback State",
+        exportable: true,
+        oneditprepare: function() {
+            const stateTypeselectFieldValues = ["playback", "playerState"]
+            stateTypeselectFieldValues.forEach((val) => {
+                $("#node-input-stateType").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-stateType").val(this.stateType)
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="get-playback-state">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-stateType">stateType</label>
+        <select type="text" id="node-input-stateType">
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="get-playback-state">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>

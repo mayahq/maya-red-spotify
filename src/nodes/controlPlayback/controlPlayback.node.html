@@ -1,0 +1,170 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("control-playback", {
+        category: "Spotify",
+        color: "#37B954",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            shuffleMode: {
+                value: "true"
+            },
+            payloadTypeshuffleMode: {
+                value: "str"
+            },
+            repeatMode: {
+                value: "off"
+            },
+            payloadTyperepeatMode: {
+                value: "str"
+            },
+            action: {
+                value: "resume"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "../../../icons/spotify.png",
+        label: function() {
+            return this.name || "Control Playback"
+        },
+        paletteLabel: "Control Playback",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypeshuffleMode === null) {
+                if (this.shuffleMode === "") {
+                    this.payloadTypeshuffleMode = "date"
+                } else {
+                    this.payloadTypeshuffleMode = "str"
+                }
+            } else if (this.payloadTypeshuffleMode === 'string' || this.payloadTypeshuffleMode === 'none') {
+                this.payloadTypeshuffleMode = "str"
+            }
+
+            $("#node-input-payloadTypeshuffleMode").val(this.payloadTypeshuffleMode)
+            $("#node-input-shuffleMode").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypeshuffleMode"),
+                types: ["str", "flow", "global"]
+            })
+            $("#node-input-shuffleMode").typedInput("type", this.payloadTypeshuffleMode)
+
+            if (this.payloadTyperepeatMode === null) {
+                if (this.repeatMode === "") {
+                    this.payloadTyperepeatMode = "date"
+                } else {
+                    this.payloadTyperepeatMode = "str"
+                }
+            } else if (this.payloadTyperepeatMode === 'string' || this.payloadTyperepeatMode === 'none') {
+                this.payloadTyperepeatMode = "str"
+            }
+
+            $("#node-input-payloadTyperepeatMode").val(this.payloadTyperepeatMode)
+            $("#node-input-repeatMode").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTyperepeatMode"),
+                types: ["str", "flow", "global"]
+            })
+            $("#node-input-repeatMode").typedInput("type", this.payloadTyperepeatMode)
+
+
+            const actionFieldSetNames = ["resume", "pause", "next", "previous", "toggleShuffle", "toggleRepeat"]
+            actionFieldSetNames.forEach((fieldSetName) => {
+                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+            })
+
+            $("#node-input-action").val(this.action)
+            $("#node-input-action").on("change", (e) => {
+                const newFieldSet = e.target.value
+                actionFieldSetNames.forEach((fieldSetName) => {
+                    if (fieldSetName !== newFieldSet) {
+                        document.querySelector("div#fieldset-" + fieldSetName).style.display = 'none'
+                    }
+                })
+                document.querySelector("div#fieldset-" + newFieldSet).style.display = ''
+                $("#node-input-action").val(e.target.value)
+            })
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="control-playback">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-action">action</label>
+        <select type="text" id="node-input-action">
+        </select>
+    </div>
+    <div id="fieldset-resume" style="padding-left: 10px;">
+
+    </div>
+
+    <div id="fieldset-pause" style="padding-left: 10px;">
+
+    </div>
+
+    <div id="fieldset-next" style="padding-left: 10px;">
+
+    </div>
+
+    <div id="fieldset-previous" style="padding-left: 10px;">
+
+    </div>
+
+    <div id="fieldset-toggleShuffle" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-shuffleMode">shuffleMode</label>
+            <input type="text" id="node-input-shuffleMode"></input>
+            <input type="hidden" id="node-input-payloadTypeshuffleMode">
+        </div>
+    </div>
+
+    <div id="fieldset-toggleRepeat" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-repeatMode">repeatMode</label>
+            <input type="text" id="node-input-repeatMode"></input>
+            <input type="hidden" id="node-input-payloadTyperepeatMode">
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="control-playback">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>

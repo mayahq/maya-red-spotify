@@ -1,0 +1,123 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("search", {
+        category: "Spotify",
+        color: "#37B954",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            query: {
+                value: ""
+            },
+            payloadTypequery: {
+                value: "str"
+            },
+            searchType: {
+                value: "artist,track"
+            },
+            payloadTypesearchType: {
+                value: "str"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "../../../icons/spotify.png",
+        label: function() {
+            return this.name || "Search"
+        },
+        paletteLabel: "Search",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypequery === null) {
+                if (this.query === "") {
+                    this.payloadTypequery = "date"
+                } else {
+                    this.payloadTypequery = "str"
+                }
+            } else if (this.payloadTypequery === 'string' || this.payloadTypequery === 'none') {
+                this.payloadTypequery = "str"
+            }
+
+            $("#node-input-payloadTypequery").val(this.payloadTypequery)
+            $("#node-input-query").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypequery"),
+                types: ["str", "msg", "global"]
+            })
+            $("#node-input-query").typedInput("type", this.payloadTypequery)
+
+            if (this.payloadTypesearchType === null) {
+                if (this.searchType === "") {
+                    this.payloadTypesearchType = "date"
+                } else {
+                    this.payloadTypesearchType = "str"
+                }
+            } else if (this.payloadTypesearchType === 'string' || this.payloadTypesearchType === 'none') {
+                this.payloadTypesearchType = "str"
+            }
+
+            $("#node-input-payloadTypesearchType").val(this.payloadTypesearchType)
+            $("#node-input-searchType").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypesearchType"),
+                types: ["str", "msg", "global"]
+            })
+            $("#node-input-searchType").typedInput("type", this.payloadTypesearchType)
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="search">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-query">query</label>
+        <input type="text" id="node-input-query"></input>
+        <input type="hidden" id="node-input-payloadTypequery">
+    </div>
+    <div class="form-row">
+        <label for="node-input-searchType">searchType</label>
+        <input type="text" id="node-input-searchType"></input>
+        <input type="hidden" id="node-input-payloadTypesearchType">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="search">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>

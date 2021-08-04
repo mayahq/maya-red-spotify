@@ -1,0 +1,151 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("playlist", {
+        category: "Spotify",
+        color: "#37B954",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            tracks: {
+                value: ""
+            },
+            payloadTypetracks: {
+                value: "str"
+            },
+            playlistId: {
+                value: ""
+            },
+            payloadTypeplaylistId: {
+                value: "str"
+            },
+            action: {
+                value: "addTracks"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "../../../icons/spotify.png",
+        label: function() {
+            return this.name || "Playlist"
+        },
+        paletteLabel: "Playlist",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypetracks === null) {
+                if (this.tracks === "") {
+                    this.payloadTypetracks = "date"
+                } else {
+                    this.payloadTypetracks = "str"
+                }
+            } else if (this.payloadTypetracks === 'string' || this.payloadTypetracks === 'none') {
+                this.payloadTypetracks = "str"
+            }
+
+            $("#node-input-payloadTypetracks").val(this.payloadTypetracks)
+            $("#node-input-tracks").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypetracks"),
+                types: ["json", "msg", "flow", "global", "str"]
+            })
+            $("#node-input-tracks").typedInput("type", this.payloadTypetracks)
+
+            if (this.payloadTypeplaylistId === null) {
+                if (this.playlistId === "") {
+                    this.payloadTypeplaylistId = "date"
+                } else {
+                    this.payloadTypeplaylistId = "str"
+                }
+            } else if (this.payloadTypeplaylistId === 'string' || this.payloadTypeplaylistId === 'none') {
+                this.payloadTypeplaylistId = "str"
+            }
+
+            $("#node-input-payloadTypeplaylistId").val(this.payloadTypeplaylistId)
+            $("#node-input-playlistId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypeplaylistId"),
+                types: ["msg", "flow", "global", "str"]
+            })
+            $("#node-input-playlistId").typedInput("type", this.payloadTypeplaylistId)
+
+
+            const actionFieldSetNames = ["addTracks"]
+            actionFieldSetNames.forEach((fieldSetName) => {
+                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+            })
+
+            $("#node-input-action").val(this.action)
+            $("#node-input-action").on("change", (e) => {
+                const newFieldSet = e.target.value
+                actionFieldSetNames.forEach((fieldSetName) => {
+                    if (fieldSetName !== newFieldSet) {
+                        document.querySelector("div#fieldset-" + fieldSetName).style.display = 'none'
+                    }
+                })
+                document.querySelector("div#fieldset-" + newFieldSet).style.display = ''
+                $("#node-input-action").val(e.target.value)
+            })
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="playlist">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-action">action</label>
+        <select type="text" id="node-input-action">
+        </select>
+    </div>
+    <div id="fieldset-addTracks" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-tracks">tracks</label>
+            <input type="text" id="node-input-tracks"></input>
+            <input type="hidden" id="node-input-payloadTypetracks">
+        </div>
+        <div class="form-row">
+            <label for="node-input-playlistId">playlistId</label>
+            <input type="text" id="node-input-playlistId"></input>
+            <input type="hidden" id="node-input-payloadTypeplaylistId">
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="playlist">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>
