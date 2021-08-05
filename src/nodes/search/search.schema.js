@@ -31,6 +31,7 @@ class Search extends Node {
     })
 
     async refreshTokens() {
+        console.log('Search node refreshing tokens')
         const newTokens = await refresh(this)
         await this.tokens.set(newTokens)
         return newTokens

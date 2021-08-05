@@ -41,6 +41,7 @@ class Play extends Node {
     }
 
     async refreshTokens() {
+        console.log('Play node refreshing tokens')
         const newTokens = await refresh(this)
         await this.tokens.set(newTokens)
         return newTokens

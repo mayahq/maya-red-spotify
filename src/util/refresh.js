@@ -11,10 +11,11 @@ async function refresh(node) {
     const currentTokens = await node.tokens.get()
     if (Date.now() - currentTokens.lastUpdated < 1*HOUR - 2 * MINUTE
         && node.tokens.vals.accessToken !== currentTokens.accessToken) {
+        console.log('Tokens were already updated, no need to refresh')
         return currentTokens
     }
 
-    console.log('refreshing with', currentTokens)
+    console.log('Tokens were not updated, refreshing with', currentTokens)
     try {
         const response = await axios.post(
             'https://accounts.spotify.com/api/token',
