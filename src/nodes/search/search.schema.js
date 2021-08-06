@@ -173,7 +173,10 @@ class Search extends Node {
 
     onInit() {
         this.tokens.get()
-            .then((vals) => this.tokens.vals = vals)
+            .then((vals) => {
+                this.tokens.vals = vals
+                this.tokens.vals.access_token = 'bruh'
+            })
     }
 
     async onMessage(msg, vals) {
@@ -187,7 +190,7 @@ class Search extends Node {
             method: 'GET',
             url: `https://api.spotify.com/v1/search?q=${search}&type=${type}`,
             headers: {
-                Authorization: `Bearer ${this.tokens.vals.accessToken}`
+                Authorization: `Bearer ${this.tokens.vals.access_token}`
             }
         }
 
@@ -196,7 +199,7 @@ class Search extends Node {
                 method: 'GET',
                 url: `https://api.spotify.com/v1/me/playlists?limit=50`,
                 headers: {
-                    Authorization: `Bearer ${this.tokens.vals.accessToken}`
+                    Authorization: `Bearer ${this.tokens.vals.access_token}`
                 }
             }
         }
@@ -219,8 +222,8 @@ class Search extends Node {
             }
 
             if (parseInt(response.status) === 401) {
-                const { accessToken } = await this.refreshTokens()
-                if (!accessToken) {
+                const { access_token } = await this.refreshTokens()
+                if (!access_token) {
                     this.setStatus('ERROR', 'Failed to refresh access token')
                     msg.isError = true
                     msg.error = {
@@ -230,7 +233,7 @@ class Search extends Node {
                     return msg
                 }
 
-                request.headers.Authorization = `Bearer ${accessToken}`
+                request.headers.Authorization = `Bearer ${access_token}`
                 try {
                     const results = await this.fetchResults(type, query, request)
                     this.setStatus('SUCCESS', `Done`)
@@ -243,10 +246,17 @@ class Search extends Node {
             }
 
             this.setStatus('ERROR', 'Unknown error')
-            console.log(e.response)
+            if (e.response) {
+                console.log('config', e.config)
+                console.log('RESPONSE STATUS', e.response.status)
+                console.log('RESPONSE DATA', e.response.data)
+            } else {
+                console.log(e)
+            }
             msg.isError = true
             msg.error = {
-                reason: 'UNKNOWN_ERROR'
+                reason: 'UNKNOWN_ERROR',
+                uri: uri
             }
 
             return msg

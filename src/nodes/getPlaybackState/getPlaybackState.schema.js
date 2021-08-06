@@ -50,7 +50,7 @@ class GetPlaybackState extends Node {
             method: 'GET',
             url: 'https://api.spotify.com/v1/me/player/currently-playing',
             headers: {
-                Authorization: `Bearer ${this.tokens.vals.accessToken}`
+                Authorization: `Bearer ${this.tokens.vals.access_token}`
             }
         }
 
@@ -74,8 +74,8 @@ class GetPlaybackState extends Node {
             }
 
             if (parseInt(response.status) === 401) {
-                const { accessToken } = await this.refreshTokens()
-                request.headers.Authorization = `Bearer ${accessToken}`
+                const { access_token } = await this.refreshTokens()
+                request.headers.Authorization = `Bearer ${access_token}`
                 try {
                     msg.spotifyState = await this.getStateFromAPI(request)
                     return msg
@@ -86,10 +86,17 @@ class GetPlaybackState extends Node {
             }
 
             this.setStatus('ERROR', 'Unknown error')
-            console.log(e.response)
+            if (e.response) {
+                console.log('config', e.config)
+                console.log('RESPONSE STATUS', e.response.status)
+                console.log('RESPONSE DATA', e.response.data)
+            } else {
+                console.log(e)
+            }
             msg.isError = true
             msg.error = {
-                reason: 'UNKNOWN_ERROR'
+                reason: 'UNKNOWN_ERROR',
+                uri: uri
             }
 
             return msg

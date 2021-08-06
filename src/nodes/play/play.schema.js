@@ -33,6 +33,7 @@ class Play extends Node {
     })
 
     onInit() {
+        console.log('This the play node')
         this.tokens.get()
             .then((vals) => {
                 console.log('play got tokens', vals)
@@ -57,7 +58,7 @@ class Play extends Node {
             url: 'https://api.spotify.com/v1/me/player/play',
             data: {},
             headers: {
-                Authorization: `Bearer ${this.tokens.vals.accessToken}`
+                Authorization: `Bearer ${this.tokens.vals.access_token}`
             }
         }
 
@@ -70,16 +71,17 @@ class Play extends Node {
         // If the spotify app is already running and playing something
         // we know the user is listening through this only, so we try
         // to control it natively (only for macOS)
-        const nativePlayerState = getPlayerStateNative()
-        if (nativePlayerState === 'playing') {
-            playNative(uri)
-            console.log('Played natively')
-            this.setStatus('SUCCESS', 'Playing')
-            return msg
-        }
+        // const nativePlayerState = getPlayerStateNative()
+        // if (nativePlayerState === 'playing') {
+        //     playNative(uri)
+        //     console.log('Played natively')
+        //     this.setStatus('SUCCESS', 'Playing')
+        //     return msg
+        // }
 
         try {
             const response = await axios(request)
+            console.log('First access token:', this.tokens.vals.access_token)
             return msg
         } catch (e) {
             const response = e.response
@@ -100,8 +102,9 @@ class Play extends Node {
                     }
                 }
                 else if (parseInt(response.status) === 401) {
-                    const { accessToken } = await this.refreshTokens()
-                    if (!accessToken) {
+                    const { access_token } = await this.refreshTokens()
+                    console.log('New access token is', access_token)
+                    if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
                         msg.isError = true
                         msg.error = {
@@ -111,18 +114,33 @@ class Play extends Node {
                         return msg
                     } 
 
-                    request.headers.Authorization = `Bearer ${accessToken}`
+                    request.headers.Authorization = `Bearer ${access_token}`
                     try {
                         const response = await axios(request)
                         return msg
                     } catch (e) {
                         console.log('What just happened?')
+                        if (e.response) {
+                            console.log('config', e.config)
+                            console.log('RESPONSE STATUS', e.response.status)
+                            console.log('RESPONSE DATA', e.response.data)
+                        } else {
+                            console.log(e)
+                        }
+                        console.log('-------------------------------------------------')
                     }
                 }    
             }
 
             this.setStatus('ERROR', 'Unknown error')
-            console.log(e)
+            if (e.response) {
+                console.log('config', e.config)
+                console.log('RESPONSE STATUS', e.response.status)
+                console.log('RESPONSE DATA', e.response.data)
+            } else {
+                console.log(e)
+            }
+
             msg.isError = true
             msg.error = {
                 reason: 'UNKNOWN_ERROR',

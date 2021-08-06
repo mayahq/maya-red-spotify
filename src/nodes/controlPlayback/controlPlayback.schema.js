@@ -64,30 +64,30 @@ class ControlPlayback extends Node {
     // }
 
     async onMessage(msg, vals) {
-        if (getPlayerStateNative() === 'playing') {
-            if (vals.action.selected === 'pause') {
-                const paused = pauseNative()
-                if (paused) return msg
-            }
-            else if (vals.action.selected === 'resume') {
-                const resumed = resumeNative()
-                if (resumed) return msg
-            }
-            else if (vals.action.selected === 'next') {
-                const skipped = nextTrackNative()
-                if (skipped) return msg
-            }
-            else if (vals.action.selected === 'previous') {
-                const wentBack = previousTrackNative()
-                if (wentBack) return msg
-            }
-        }
+        // if (getPlayerStateNative() === 'playing') {
+        //     if (vals.action.selected === 'pause') {
+        //         const paused = pauseNative()
+        //         if (paused) return msg
+        //     }
+        //     else if (vals.action.selected === 'resume') {
+        //         const resumed = resumeNative()
+        //         if (resumed) return msg
+        //     }
+        //     else if (vals.action.selected === 'next') {
+        //         const skipped = nextTrackNative()
+        //         if (skipped) return msg
+        //     }
+        //     else if (vals.action.selected === 'previous') {
+        //         const wentBack = previousTrackNative()
+        //         if (wentBack) return msg
+        //     }
+        // }
 
         let request = {
             method: 'PUT',
             url: 'https://api.spotify.com/v1/me/player/play',
             headers: {
-                Authorization: `Bearer ${this.tokens.vals.accessToken}`
+                Authorization: `Bearer ${this.tokens.vals.access_token}`
             }
         }
 
@@ -126,8 +126,8 @@ class ControlPlayback extends Node {
             }
 
             if (parseInt(response.status) === 401) {
-                const { accessToken } = await this.refreshTokens()
-                if (!accessToken) {
+                const { access_token } = await this.refreshTokens()
+                if (!access_token) {
                     this.setStatus('ERROR', 'Failed to refresh access token')
                     msg.isError = true
                     msg.error = {
@@ -136,7 +136,7 @@ class ControlPlayback extends Node {
                     return msg
                 }
 
-                request.headers.Authorization = `Bearer ${accessToken}`
+                request.headers.Authorization = `Bearer ${access_token}`
                 try {
                     await axios(request)
                     return msg
@@ -147,10 +147,17 @@ class ControlPlayback extends Node {
             }
 
             this.setStatus('ERROR', 'Unknown error')
-            console.log(e.response)
+            if (e.response) {
+                console.log('config', e.config)
+                console.log('RESPONSE STATUS', e.response.status)
+                console.log('RESPONSE DATA', e.response.data)
+            } else {
+                console.log(e)
+            }
             msg.isError = true
             msg.error = {
-                reason: 'UNKNOWN_ERROR'
+                reason: 'UNKNOWN_ERROR',
+                uri: uri
             }
 
             return msg
