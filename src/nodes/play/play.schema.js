@@ -33,12 +33,7 @@ class Play extends Node {
     })
 
     onInit() {
-        console.log('This the play node')
-        this.tokens.get()
-            .then((vals) => {
-                console.log('play got tokens', vals)
-                this.tokens.vals = vals
-            })
+        
     }
 
     async refreshTokens() {

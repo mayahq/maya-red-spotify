@@ -33,8 +33,7 @@ class GetPlaybackState extends Node {
     }
 
     onInit() {
-        this.tokens.get()
-            .then((vals) => this.tokens.vals = vals)
+
     }
 
     async getStateFromAPI(request) {

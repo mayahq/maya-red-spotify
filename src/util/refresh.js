@@ -7,7 +7,7 @@ const MINUTE = 60*SECOND
 const HOUR = 60*MINUTE
 
 
-async function refreshTokens({ access_token, refresh_token }) {
+async function refreshTokens1({ access_token, refresh_token }) {
     const response = await axios.post(
         'https://accounts.spotify.com/api/token',
         querystring.stringify({
@@ -29,6 +29,10 @@ async function refreshTokens({ access_token, refresh_token }) {
         lastUpdated: Date.now()
     }
 }
+
+// async function refreshTokens({ access_token, refresh_token }) {
+//     const tokens = await 
+// }
 
 function sleep(timeout) {
     return new Promise((res, rej) => {
@@ -53,9 +57,13 @@ async function refresh(node) {
 
         console.log('Tokens were not updated, refreshing with', tokens)
         try {
-            const newTokens = await refreshTokens({ access_token, refresh_token })
+            // const newTokens = await refreshTokens({ access_token, refresh_token })
+            const newTokens = await node.tokens.refresh({ access_token, refresh_token })
             console.log('Tokens refreshed via API. New tokens:', newTokens)
-            return newTokens
+            return {
+                ...newTokens,
+                lastUpdated: Date.now()
+            }
         } catch (e) {
             console.log('Unable to refresh spotify token')
             if (e.response) {

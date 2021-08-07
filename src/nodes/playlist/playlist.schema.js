@@ -40,8 +40,7 @@ class Playlist extends Node {
     }
 
     onInit() {
-        this.tokens.get()
-            .then((vals) => this.tokens.vals = vals)
+        
     }
 
     async onMessage(msg, vals) {

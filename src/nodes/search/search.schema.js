@@ -172,11 +172,7 @@ class Search extends Node {
     }
 
     onInit() {
-        this.tokens.get()
-            .then((vals) => {
-                this.tokens.vals = vals
-                this.tokens.vals.access_token = 'bruh'
-            })
+        
     }
 
     async onMessage(msg, vals) {

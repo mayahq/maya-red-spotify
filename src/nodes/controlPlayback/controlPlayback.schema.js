@@ -55,8 +55,7 @@ class ControlPlayback extends Node {
     }
 
     onInit() {
-        this.tokens.get()
-            .then((vals) => this.tokens.vals = vals)
+
     }
 
     // async sendApiRequest(request, action) {
