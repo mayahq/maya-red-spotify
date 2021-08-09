@@ -4,7 +4,7 @@
   "description": "Module to control Spotify",
   "main": "index.js",
   "dependencies": {
-    "@mayahq/module-sdk": "^0.4.3",
+    "@mayahq/module-sdk": "^0.4.5",
     "axios": "^0.21.1",
     "execa": "^5.1.1",
     "fastmq": "^1.3.8",
@@ -19,7 +19,8 @@
       "search": "src/nodes/search/search.node.js",
       "control-playback": "src/nodes/controlPlayback/controlPlayback.node.js",
       "get-playback-state": "src/nodes/getPlaybackState/getPlaybackState.node.js",
-      "playlist": "src/nodes/playlist/playlist.node.js"
+      "playlist": "src/nodes/playlist/playlist.node.js",
+      "library": "src/nodes/library/library.node.js"
     }
   }
 }

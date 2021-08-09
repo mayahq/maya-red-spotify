@@ -1,0 +1,388 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("library", {
+        category: "Spotify",
+        color: "#37B954",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            lSongId: {
+                value: ""
+            },
+            payloadTypelSongId: {
+                value: "str"
+            },
+            lAlbumId: {
+                value: ""
+            },
+            payloadTypelAlbumId: {
+                value: "str"
+            },
+            uSongId: {
+                value: ""
+            },
+            payloadTypeuSongId: {
+                value: "str"
+            },
+            uAlbumId: {
+                value: ""
+            },
+            payloadTypeuAlbumId: {
+                value: "str"
+            },
+            sLimit: {
+                value: ""
+            },
+            payloadTypesLimit: {
+                value: "num"
+            },
+            sOffset: {
+                value: ""
+            },
+            payloadTypesOffset: {
+                value: "num"
+            },
+            aLimit: {
+                value: ""
+            },
+            payloadTypeaLimit: {
+                value: "num"
+            },
+            aOffset: {
+                value: ""
+            },
+            payloadTypeaOffset: {
+                value: "num"
+            },
+            action: {
+                value: "likeSong"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "spotify.png",
+        label: function() {
+            return this.name || "library"
+        },
+        paletteLabel: "library",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypelSongId === null) {
+                if (this.lSongId === "") {
+                    this.payloadTypelSongId = "date"
+                } else {
+                    this.payloadTypelSongId = "str"
+                }
+            } else if (this.payloadTypelSongId === 'string' || this.payloadTypelSongId === 'none') {
+                this.payloadTypelSongId = "str"
+            }
+
+            $("#node-input-payloadTypelSongId").val(this.payloadTypelSongId)
+            $("#node-input-lSongId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypelSongId"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-lSongId").typedInput("type", this.payloadTypelSongId)
+
+            if (this.payloadTypelAlbumId === null) {
+                if (this.lAlbumId === "") {
+                    this.payloadTypelAlbumId = "date"
+                } else {
+                    this.payloadTypelAlbumId = "str"
+                }
+            } else if (this.payloadTypelAlbumId === 'string' || this.payloadTypelAlbumId === 'none') {
+                this.payloadTypelAlbumId = "str"
+            }
+
+            $("#node-input-payloadTypelAlbumId").val(this.payloadTypelAlbumId)
+            $("#node-input-lAlbumId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypelAlbumId"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-lAlbumId").typedInput("type", this.payloadTypelAlbumId)
+
+            if (this.payloadTypeuSongId === null) {
+                if (this.uSongId === "") {
+                    this.payloadTypeuSongId = "date"
+                } else {
+                    this.payloadTypeuSongId = "str"
+                }
+            } else if (this.payloadTypeuSongId === 'string' || this.payloadTypeuSongId === 'none') {
+                this.payloadTypeuSongId = "str"
+            }
+
+            $("#node-input-payloadTypeuSongId").val(this.payloadTypeuSongId)
+            $("#node-input-uSongId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypeuSongId"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-uSongId").typedInput("type", this.payloadTypeuSongId)
+
+            if (this.payloadTypeuAlbumId === null) {
+                if (this.uAlbumId === "") {
+                    this.payloadTypeuAlbumId = "date"
+                } else {
+                    this.payloadTypeuAlbumId = "str"
+                }
+            } else if (this.payloadTypeuAlbumId === 'string' || this.payloadTypeuAlbumId === 'none') {
+                this.payloadTypeuAlbumId = "str"
+            }
+
+            $("#node-input-payloadTypeuAlbumId").val(this.payloadTypeuAlbumId)
+            $("#node-input-uAlbumId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypeuAlbumId"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-uAlbumId").typedInput("type", this.payloadTypeuAlbumId)
+
+            if (this.payloadTypesLimit === null) {
+                if (this.sLimit === "") {
+                    this.payloadTypesLimit = "date"
+                } else {
+                    this.payloadTypesLimit = "num"
+                }
+            } else if (this.payloadTypesLimit === 'string' || this.payloadTypesLimit === 'none') {
+                this.payloadTypesLimit = "num"
+            }
+
+            $("#node-input-payloadTypesLimit").val(this.payloadTypesLimit)
+            $("#node-input-sLimit").typedInput({
+                default: "num",
+                typeField: $("#node-input-payloadTypesLimit"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-sLimit").typedInput("type", this.payloadTypesLimit)
+
+            if (this.payloadTypesOffset === null) {
+                if (this.sOffset === "") {
+                    this.payloadTypesOffset = "date"
+                } else {
+                    this.payloadTypesOffset = "num"
+                }
+            } else if (this.payloadTypesOffset === 'string' || this.payloadTypesOffset === 'none') {
+                this.payloadTypesOffset = "num"
+            }
+
+            $("#node-input-payloadTypesOffset").val(this.payloadTypesOffset)
+            $("#node-input-sOffset").typedInput({
+                default: "num",
+                typeField: $("#node-input-payloadTypesOffset"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-sOffset").typedInput("type", this.payloadTypesOffset)
+
+            if (this.payloadTypeaLimit === null) {
+                if (this.aLimit === "") {
+                    this.payloadTypeaLimit = "date"
+                } else {
+                    this.payloadTypeaLimit = "num"
+                }
+            } else if (this.payloadTypeaLimit === 'string' || this.payloadTypeaLimit === 'none') {
+                this.payloadTypeaLimit = "num"
+            }
+
+            $("#node-input-payloadTypeaLimit").val(this.payloadTypeaLimit)
+            $("#node-input-aLimit").typedInput({
+                default: "num",
+                typeField: $("#node-input-payloadTypeaLimit"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-aLimit").typedInput("type", this.payloadTypeaLimit)
+
+            if (this.payloadTypeaOffset === null) {
+                if (this.aOffset === "") {
+                    this.payloadTypeaOffset = "date"
+                } else {
+                    this.payloadTypeaOffset = "num"
+                }
+            } else if (this.payloadTypeaOffset === 'string' || this.payloadTypeaOffset === 'none') {
+                this.payloadTypeaOffset = "num"
+            }
+
+            $("#node-input-payloadTypeaOffset").val(this.payloadTypeaOffset)
+            $("#node-input-aOffset").typedInput({
+                default: "num",
+                typeField: $("#node-input-payloadTypeaOffset"),
+                types: ["num", "msg", "global", "str"]
+            })
+            $("#node-input-aOffset").typedInput("type", this.payloadTypeaOffset)
+
+
+            const actionFieldSetNames = ["likeSong", "likeAlbum", "unlikeSong", "unlikeAlbum", "getLikedSongs", "getLikedAlbums"]
+            actionFieldSetNames.forEach((fieldSetName) => {
+                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+            })
+
+            $("#node-input-action").val(this.action)
+            $("#node-input-action").on("change", (e) => {
+                const newFieldSet = e.target.value
+                actionFieldSetNames.forEach((fieldSetName) => {
+                    if (fieldSetName !== newFieldSet) {
+                        document.querySelector("div#fieldset-" + fieldSetName).style.display = 'none'
+                    }
+                })
+                document.querySelector("div#fieldset-" + newFieldSet).style.display = ''
+                $("#node-input-action").val(e.target.value)
+            })
+
+        },
+        oneditsave: function() {
+
+
+
+
+
+
+
+        },
+        oneditcancel: function() {
+
+
+
+
+
+
+
+        },
+        oneditdelete: function() {
+
+
+
+
+
+
+
+        },
+        oneditresize: function() {
+
+
+
+
+
+
+
+        },
+        onpaletteadd: function() {
+
+
+
+
+
+
+
+        },
+        onpaletteremove: function() {
+
+
+
+
+
+
+
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="library">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-action">action</label>
+        <select type="text" id="node-input-action">
+        </select>
+    </div>
+    <div id="fieldset-likeSong" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-lSongId">Song ID</label>
+            <input type="text" id="node-input-lSongId"></input>
+            <input type="hidden" id="node-input-payloadTypelSongId">
+        </div>
+    </div>
+
+    <div id="fieldset-likeAlbum" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-lAlbumId">Album ID</label>
+            <input type="text" id="node-input-lAlbumId"></input>
+            <input type="hidden" id="node-input-payloadTypelAlbumId">
+        </div>
+    </div>
+
+    <div id="fieldset-unlikeSong" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-uSongId">Song ID</label>
+            <input type="text" id="node-input-uSongId"></input>
+            <input type="hidden" id="node-input-payloadTypeuSongId">
+        </div>
+    </div>
+
+    <div id="fieldset-unlikeAlbum" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-uAlbumId">Album ID</label>
+            <input type="text" id="node-input-uAlbumId"></input>
+            <input type="hidden" id="node-input-payloadTypeuAlbumId">
+        </div>
+    </div>
+
+    <div id="fieldset-getLikedSongs" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-sLimit">Limit</label>
+            <input type="text" id="node-input-sLimit"></input>
+            <input type="hidden" id="node-input-payloadTypesLimit">
+        </div>
+        <div class="form-row">
+            <label for="node-input-sOffset">Offset</label>
+            <input type="text" id="node-input-sOffset"></input>
+            <input type="hidden" id="node-input-payloadTypesOffset">
+        </div>
+    </div>
+
+    <div id="fieldset-getLikedAlbums" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-aLimit">Limit</label>
+            <input type="text" id="node-input-aLimit"></input>
+            <input type="hidden" id="node-input-payloadTypeaLimit">
+        </div>
+        <div class="form-row">
+            <label for="node-input-aOffset">Offset</label>
+            <input type="text" id="node-input-aOffset"></input>
+            <input type="hidden" id="node-input-payloadTypeaOffset">
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="library">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>

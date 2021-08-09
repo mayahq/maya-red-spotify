@@ -75,9 +75,10 @@ async function refresh(node) {
             }
 
             return {
-                access_token: null,
-                refresh_token: null,
-                lastUpdated: null
+                access_token: access_token,
+                refresh_token: refresh_token,
+                lastUpdated: lastUpdated,
+                error: true
             }
         }
     })

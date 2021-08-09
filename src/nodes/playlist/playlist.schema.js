@@ -34,13 +34,20 @@ class Playlist extends Node {
     })
 
     async refreshTokens() {
+        console.log('Playlist node refreshing tokens')
         const newTokens = await refresh(this)
-        await this.tokens.set(newTokens)
-        return newTokens
+        if (!newTokens.error) {
+            await this.tokens.set(newTokens)
+            return newTokens
+        }
+        return {
+            access_token: null,
+            refresh_token: null
+        }
     }
 
     onInit() {
-        
+
     }
 
     async onMessage(msg, vals) {

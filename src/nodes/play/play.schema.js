@@ -33,14 +33,20 @@ class Play extends Node {
     })
 
     onInit() {
-        
+
     }
 
     async refreshTokens() {
         console.log('Play node refreshing tokens')
         const newTokens = await refresh(this)
-        await this.tokens.set(newTokens)
-        return newTokens
+        if (!newTokens.error) {
+            await this.tokens.set(newTokens)
+            return newTokens
+        }
+        return {
+            access_token: null,
+            refresh_token: null
+        }
     }
 
     async onMessage(msg, vals) {
@@ -77,6 +83,7 @@ class Play extends Node {
         try {
             const response = await axios(request)
             console.log('First access token:', this.tokens.vals.access_token)
+            this.setStatus('SUCCESS', 'Playing')
             return msg
         } catch (e) {
             const response = e.response
@@ -112,6 +119,7 @@ class Play extends Node {
                     request.headers.Authorization = `Bearer ${access_token}`
                     try {
                         const response = await axios(request)
+                        this.setStatus('SUCCESS', 'Playing')
                         return msg
                     } catch (e) {
                         console.log('What just happened?')
