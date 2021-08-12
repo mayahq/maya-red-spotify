@@ -3,11 +3,10 @@ const {
     Schema,
     fields
 } = require('@mayahq/module-sdk')
-const { default: axios } = require('axios')
-const refresh = require('../../util/refresh')
+const makeRequestWithRefresh = require('../../util/reqWithRefresh');
 
 const DAT = ['str', 'msg', 'global']
-const NUM_RESULTS = 10;
+const NUM_RESULTS = 100;
 
 class Search extends Node {
     constructor(node, RED, opts) {
@@ -29,19 +28,6 @@ class Search extends Node {
         color: '#37B954',
         icon: 'spotify.png'
     })
-
-    async refreshTokens() {
-        console.log('Search node refreshing tokens')
-        const newTokens = await refresh(this)
-        if (!newTokens.error) {
-            await this.tokens.set(newTokens)
-            return newTokens
-        }
-        return {
-            access_token: null,
-            refresh_token: null
-        }
-    }
 
     constructPlaylistResults(playlists) {
         const results = playlists.map((playlist) => {
@@ -79,15 +65,19 @@ class Search extends Node {
         return score
     }
 
+    onInit() {
+        this.tokens.vals.access_token = 'bruh'
+    }
+
     constructResults(query, rawRes) {
         let results = []
         if (rawRes.tracks) {
             results = results.concat(rawRes.tracks.items.map((track) => {
                 let score = track.popularity
-                if (track.popularity > 50) {
-                    const realName = track.name.split('(')[0].split('feat.')[0]
-                    score += this.getSimilarityScore(query, realName)
-                }
+                // if (track.popularity > 50) {
+                //     const realName = track.name.split('(')[0].split('feat.')[0]
+                //     score += this.getSimilarityScore(query, realName)
+                // }
 
                 let images = null
                 if (track.album) {
@@ -131,9 +121,9 @@ class Search extends Node {
         if (rawRes.artists) {
             results = results.concat(rawRes.artists.items.map((artist) => {
                 let score = artist.popularity
-                if (artist.popularity > 40) {
-                    score += this.getSimilarityScore(query, artist.name)
-                }
+                // if (artist.popularity > 40) {
+                //     score += this.getSimilarityScore(query, artist.name)
+                // }
                 // console.log('Artist', artist.name, score)
                 const result = {
                     type: 'artist',
@@ -162,6 +152,8 @@ class Search extends Node {
             }
         }
 
+        // return results.slice(0, NUM_RESULTS)
+
         return results
             .filter((res) => res.score) // Sort only those results which have a score
             .sort(compare).slice(0, NUM_RESULTS)
@@ -169,16 +161,12 @@ class Search extends Node {
     }
 
     async fetchResults(type, query, request) {
-        const response = await axios(request)
+        const response = await makeRequestWithRefresh(this, request)
         if (type === 'playlist') {
             return this.constructPlaylistResults(response.data.items)
         } else {
             return this.constructResults(query, response.data)
         }
-    }
-
-    onInit() {
-
     }
 
     async onMessage(msg, vals) {
@@ -212,42 +200,6 @@ class Search extends Node {
             msg.searchResults = results
             return msg
         } catch (e) {
-            const response = e.response
-            if (!response) {
-                console.log('Unknown Error', e)
-                msg.isError = true
-                msg.error = {
-                    reason: 'UNKNOWN_ERROR'
-                }
-                this.setStatus('ERROR', 'Unknown error, unrelated to API')
-                return msg
-            }
-
-            if (parseInt(response.status) === 401) {
-                const { access_token } = await this.refreshTokens()
-                if (!access_token) {
-                    this.setStatus('ERROR', 'Failed to refresh access token')
-                    msg.isError = true
-                    msg.error = {
-                        reason: 'TOKEN_REFRESH_FAILED',
-                        uri: uri
-                    }
-                    return msg
-                }
-
-                request.headers.Authorization = `Bearer ${access_token}`
-                try {
-                    const results = await this.fetchResults(type, query, request)
-                    this.setStatus('SUCCESS', `Done`)
-                    msg.searchResults = results
-                    return msg
-                } catch (e) {
-                    console.log('What just happened?')
-                    console.log(e)
-                }
-            }
-
-            this.setStatus('ERROR', 'Unknown error')
             if (e.response) {
                 console.log('config', e.config)
                 console.log('RESPONSE STATUS', e.response.status)
@@ -255,12 +207,10 @@ class Search extends Node {
             } else {
                 console.log(e)
             }
-            msg.isError = true
-            msg.error = {
-                reason: 'UNKNOWN_ERROR',
-                uri: uri
-            }
 
+            msg.__isError = true
+            msg.__error = e
+            this.setStatus('ERROR', e.message)
             return msg
         }
     }

@@ -21,6 +21,12 @@
             payloadTyperepeatMode: {
                 value: "str"
             },
+            trackUri: {
+                value: ""
+            },
+            payloadTypetrackUri: {
+                value: "str"
+            },
             action: {
                 value: "resume"
             },
@@ -48,7 +54,7 @@
             $("#node-input-shuffleMode").typedInput({
                 default: "str",
                 typeField: $("#node-input-payloadTypeshuffleMode"),
-                types: ["str", "flow", "global"]
+                types: ["msg", "flow", "global", "str"]
             })
             $("#node-input-shuffleMode").typedInput("type", this.payloadTypeshuffleMode)
 
@@ -66,12 +72,30 @@
             $("#node-input-repeatMode").typedInput({
                 default: "str",
                 typeField: $("#node-input-payloadTyperepeatMode"),
-                types: ["str", "flow", "global"]
+                types: ["msg", "flow", "global", "str"]
             })
             $("#node-input-repeatMode").typedInput("type", this.payloadTyperepeatMode)
 
+            if (this.payloadTypetrackUri === null) {
+                if (this.trackUri === "") {
+                    this.payloadTypetrackUri = "date"
+                } else {
+                    this.payloadTypetrackUri = "str"
+                }
+            } else if (this.payloadTypetrackUri === 'string' || this.payloadTypetrackUri === 'none') {
+                this.payloadTypetrackUri = "str"
+            }
 
-            const actionFieldSetNames = ["resume", "pause", "next", "previous", "toggleShuffle", "toggleRepeat"]
+            $("#node-input-payloadTypetrackUri").val(this.payloadTypetrackUri)
+            $("#node-input-trackUri").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypetrackUri"),
+                types: ["msg", "flow", "global", "str"]
+            })
+            $("#node-input-trackUri").typedInput("type", this.payloadTypetrackUri)
+
+
+            const actionFieldSetNames = ["resume", "pause", "next", "previous", "toggleShuffle", "toggleRepeat", "addToQueue"]
             actionFieldSetNames.forEach((fieldSetName) => {
                 $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
             })
@@ -137,6 +161,14 @@
             <label for="node-input-repeatMode">repeatMode</label>
             <input type="text" id="node-input-repeatMode"></input>
             <input type="hidden" id="node-input-payloadTyperepeatMode">
+        </div>
+    </div>
+
+    <div id="fieldset-addToQueue" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-trackUri">trackUri</label>
+            <input type="text" id="node-input-trackUri"></input>
+            <input type="hidden" id="node-input-payloadTypetrackUri">
         </div>
     </div>
 </script>

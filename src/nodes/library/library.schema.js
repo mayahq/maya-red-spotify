@@ -3,8 +3,7 @@ const {
     Schema,
     fields
 } = require('@mayahq/module-sdk')
-const axios = require('axios')
-const refresh = require('../../util/refresh')
+const makeRequestWithRefresh = require('../../util/reqWithRefresh')
 
 
 const DAT = ['num', 'msg', 'global']
@@ -52,50 +51,6 @@ class Library extends Node {
         color: '#37B954',
         icon: 'spotify.png'
     })
-
-    onInit() {
-        // Do something on initialization of node
-    }
-
-    async refreshTokens() {
-        console.log('ControlPlayback node refreshing tokens')
-        const newTokens = await refresh(this)
-        if (!newTokens.error) {
-            await this.tokens.set(newTokens)
-            return newTokens
-        }
-        return {
-            access_token: null,
-            refresh_token: null
-        }
-    }
-
-    async makeRequestWithRefresh(request) {
-        try {
-            const response = await axios(request)
-            return response
-        } catch (e) {
-            if (e.response && parseInt(e.response.status) === 401) {
-                const { access_token } = await this.refreshTokens()
-                if (!access_token) {
-                    const err = new Error('Unable to refresh tokens')
-                    err.name = 'TOKEN_REFRESH_FAILED'
-                    throw err
-                }
-
-                request.headers.Authorization = `Bearer ${access_token}`
-                try {
-                    const response = await axios(request)
-                    return response
-                } catch (e) {
-                    const err = new Error('An unknown error has occured')
-                    err.name = 'UNKNOWN_ERROR'
-                }
-            } else {
-                throw e
-            }
-        }
-    }
 
     getTracks(rawRes) {
         const tracks = []
@@ -208,7 +163,7 @@ class Library extends Node {
         }
 
         try {
-            const response = await this.makeRequestWithRefresh(request)
+            const response = await makeRequestWithRefresh(this, request)
             if (vals.action.selected === 'getLikedSongs') {
                 msg.searchResults = this.getTracks(response.data)
                 this.setStatus('SUCCESS', 'Done')
@@ -223,25 +178,19 @@ class Library extends Node {
             this.setStatus('SUCCESS', 'Done')
             return msg
         } catch (e) {
-            console.log('Error in library node')
             if (e.response) {
-                console.log('CONFIG', e.config)
-                console.log('STATUS', e.response.status)
-                console.log('DATA', e.response.data)
+                console.log('config', e.config)
+                console.log('RESPONSE STATUS', e.response.status)
+                console.log('RESPONSE DATA', e.response.data)
             } else {
                 console.log(e)
             }
 
+            msg.__isError = true
+            msg.__error = e
             this.setStatus('ERROR', e.message)
-            msg.isError = true
-            msg.error = {
-                reason: e.name,
-                description: e.message
-            }
-
             return msg
         }
-
     }
 }
 

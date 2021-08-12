@@ -4,16 +4,7 @@ const {
     fields
 } = require('@mayahq/module-sdk')
 
-const axios = require('axios')
-
-const { 
-    getPlayerStateNative,
-    resumeNative,
-    pauseNative,
-    nextTrackNative,
-    previousTrackNative
-} = require('../../../utils/playerStateNative')
-const refresh = require('../../util/refresh')
+const makeRequestWithRefresh = require('../../util/reqWithRefresh')
 
 class ControlPlayback extends Node {
     constructor(node, RED, opts) {
@@ -36,10 +27,13 @@ class ControlPlayback extends Node {
                     next: {},
                     previous: {},
                     toggleShuffle: {
-                        shuffleMode: new fields.Typed({ type: 'str', allowedTypes: ['str', 'flow', 'global'], defaultVal: 'true' })
+                        shuffleMode: new fields.Typed({ type: 'str', allowedTypes: ['msg', 'flow', 'global'], defaultVal: 'true' })
                     },
                     toggleRepeat: {
-                        repeatMode: new fields.Typed({ type: 'str', allowedTypes: ['str', 'flow', 'global'], defaultVal: 'off' })
+                        repeatMode: new fields.Typed({ type: 'str', allowedTypes: ['msg', 'flow', 'global'], defaultVal: 'off' })
+                    },
+                    addToQueue: {
+                        trackUri: new fields.Typed({ type: 'str', allowedTypes: ['msg', 'flow', 'global'] })
                     }
                 }
             })
@@ -48,46 +42,7 @@ class ControlPlayback extends Node {
         icon: 'spotify.png'
     })
 
-    async refreshTokens() {
-        console.log('ControlPlayback node refreshing tokens')
-        const newTokens = await refresh(this)
-        if (!newTokens.error) {
-            await this.tokens.set(newTokens)
-            return newTokens
-        }
-        return {
-            access_token: null,
-            refresh_token: null
-        }
-    }
-
-    onInit() {
-
-    }
-
-    // async sendApiRequest(request, action) {
-
-    // }
-
     async onMessage(msg, vals) {
-        // if (getPlayerStateNative() === 'playing') {
-        //     if (vals.action.selected === 'pause') {
-        //         const paused = pauseNative()
-        //         if (paused) return msg
-        //     }
-        //     else if (vals.action.selected === 'resume') {
-        //         const resumed = resumeNative()
-        //         if (resumed) return msg
-        //     }
-        //     else if (vals.action.selected === 'next') {
-        //         const skipped = nextTrackNative()
-        //         if (skipped) return msg
-        //     }
-        //     else if (vals.action.selected === 'previous') {
-        //         const wentBack = previousTrackNative()
-        //         if (wentBack) return msg
-        //     }
-        // }
 
         let request = {
             method: 'PUT',
@@ -98,61 +53,39 @@ class ControlPlayback extends Node {
         }
 
         if (vals.action.selected === 'pause') {
+            this.setStatus('PROGRESS', 'Pausing')
             request.url = 'https://api.spotify.com/v1/me/player/pause'
         }
         else if (vals.action.selected === 'toggleShuffle') {
+            this.setStatus('PROGRESS', 'Toggling shuffle')
             request.url = `https://api.spotify.com/v1/me/player/shuffle?state=${vals.action.childValues.shuffleMode}`
         }
         else if (vals.action.selected === 'next') {
+            this.setStatus('PROGRESS', 'Skipping song')
             request.method = 'POST'
             request.url = 'https://api.spotify.com/v1/me/player/next'
         }
         else if (vals.action.selected === 'previous') {
+            this.setStatus('PROGRESS', 'Playing last song')
             request.method = 'POST'
             request.url = 'https://api.spotify.com/v1/me/player/previous'
         }
         else if (vals.action.selected === 'toggleRepeat') {
+            this.setStatus('PROGRESS', 'Toggling repeat')
             request.method = 'PUT'
             request.url = `https://api.spotify.com/v1/me/player/repeat?state=${vals.action.childValues.repeatMode}`
         }
+        else if (vals.action.selected === 'addToQueue') {
+            this.setStatus('PROGRESS', 'Adding to queue')
+            request.method = 'POST'
+            request.url = `https://api.spotify.com/v1/me/player/queue?uri=${vals.action.childValues.trackUri}`
+        }
 
         try {
-            await axios(request)
+            await makeRequestWithRefresh(this, request)
+            this.setStatus('SUCCESS', 'Done')
             return msg
         } catch (e) {
-            const response = e.response
-            if (!response) {
-                console.log('Unknown Error', e)
-                msg.isError = true
-                msg.error = {
-                    reason: 'UNKNOWN_ERROR'
-                }
-                this.setStatus('ERROR', 'Unknown error, unrelated to API')
-                return msg
-            }
-
-            if (parseInt(response.status) === 401) {
-                const { access_token } = await this.refreshTokens()
-                if (!access_token) {
-                    this.setStatus('ERROR', 'Failed to refresh access token')
-                    msg.isError = true
-                    msg.error = {
-                        reason: 'TOKEN_REFRESH_FAILED',
-                    }
-                    return msg
-                }
-
-                request.headers.Authorization = `Bearer ${access_token}`
-                try {
-                    await axios(request)
-                    return msg
-                } catch (e) {
-                    console.log('What just happened?')
-                    console.log(e)
-                }
-            }
-
-            this.setStatus('ERROR', 'Unknown error')
             if (e.response) {
                 console.log('config', e.config)
                 console.log('RESPONSE STATUS', e.response.status)
@@ -160,15 +93,12 @@ class ControlPlayback extends Node {
             } else {
                 console.log(e)
             }
-            msg.isError = true
-            msg.error = {
-                reason: 'UNKNOWN_ERROR',
-                uri: uri
-            }
 
+            msg.__isError = true
+            msg.__error = e
+            this.setStatus('ERROR', e.message)
             return msg
         }
-        
     }
 }
 

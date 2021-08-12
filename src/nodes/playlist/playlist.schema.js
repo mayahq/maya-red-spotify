@@ -3,8 +3,7 @@ const {
     Schema,
     fields
 } = require('@mayahq/module-sdk')
-const refresh = require('../../util/refresh')
-const axios = require('axios')
+const makeRequestWithRefresh = require('../../util/reqWithRefresh')
 
 class Playlist extends Node {
     constructor(node, RED, opts) {
@@ -33,25 +32,9 @@ class Playlist extends Node {
         icon: 'spotify.png'
     })
 
-    async refreshTokens() {
-        console.log('Playlist node refreshing tokens')
-        const newTokens = await refresh(this)
-        if (!newTokens.error) {
-            await this.tokens.set(newTokens)
-            return newTokens
-        }
-        return {
-            access_token: null,
-            refresh_token: null
-        }
-    }
-
-    onInit() {
-
-    }
-
     async onMessage(msg, vals) {
         if (vals.action.selected === 'addTracks') {
+            this.setStatus('PROGRESS', 'Adding track to playlist')
             const playlistId = vals.action.childValues.playlistId
             let tracks = vals.action.childValues.tracks
             if (typeof tracks === 'string') {
@@ -70,44 +53,11 @@ class Playlist extends Node {
             }
 
             try {
-                const { data } = await axios(request)
+                const { data } = await makeRequestWithRefresh(this, request)
                 msg.playlistSnapshotId = data.snapshot_id
+                this.setStatus('SUCCESS', 'Added')
                 return msg
             } catch (e) {
-                const response = e.response
-                if (!response) {
-                    console.log('Unknown Error', e)
-                    msg.isError = true
-                    msg.error = {
-                        reason: 'UNKNOWN_ERROR'
-                    }
-                    this.setStatus('ERROR', 'Unknown error, unrelated to API')
-                    return msg
-                }
-
-                if (parseInt(response.status) === 401) {
-                    const { access_token } = await this.refreshTokens()
-                    if (!access_token) {
-                        this.setStatus('ERROR', 'Failed to refresh access token')
-                        msg.isError = true
-                        msg.error = {
-                            reason: 'TOKEN_REFRESH_FAILED',
-                        }
-                        return msg
-                    }
-    
-                    request.headers.Authorization = `Bearer ${access_token}`
-                    try {
-                        const { data } = await axios(request)
-                        msg.playlistSnapshotId = data.snapshot_id
-                        return msg
-                    } catch (e) {
-                        console.log('What just happened?')
-                        console.log(e)
-                    }
-                }
-    
-                this.setStatus('ERROR', 'Unknown error')
                 if (e.response) {
                     console.log('config', e.config)
                     console.log('RESPONSE STATUS', e.response.status)
@@ -115,12 +65,10 @@ class Playlist extends Node {
                 } else {
                     console.log(e)
                 }
-                msg.isError = true
-                msg.error = {
-                    reason: 'UNKNOWN_ERROR',
-                    uri: uri
-                }
-
+    
+                msg.__isError = true
+                msg.__error = e
+                this.setStatus('ERROR', e.message)
                 return msg
             }
         }

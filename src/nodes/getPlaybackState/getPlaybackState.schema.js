@@ -3,8 +3,7 @@ const {
     Schema,
     fields
 } = require('@mayahq/module-sdk')
-const { default: axios } = require('axios')
-const refresh = require('../../util/refresh')
+const makeRequestWithRefresh = require('../../util/reqWithRefresh')
 
 class GetPlaybackState extends Node {
     constructor(node, RED, opts) {
@@ -26,31 +25,6 @@ class GetPlaybackState extends Node {
         icon: 'spotify.png'
     })
 
-    async refreshTokens() {
-        console.log('Playback State node refreshing tokens')
-        const newTokens = await refresh(this)
-        if (!newTokens.error) {
-            await this.tokens.set(newTokens)
-            return newTokens
-        }
-        return {
-            access_token: null,
-            refresh_token: null
-        }
-    }
-
-    onInit() {
-
-    }
-
-    async getStateFromAPI(request) {
-        const response = await axios(request)
-        if (response.data) {
-            return response.data
-        } 
-        return null
-    }
-
     async onMessage(msg, vals) {
         let request = {
             method: 'GET',
@@ -65,33 +39,10 @@ class GetPlaybackState extends Node {
         }
 
         try {
-            msg.spotifyState = await this.getStateFromAPI(request)
+            msg.spotifyState = (await makeRequestWithRefresh(this, request)).data || null
+            this.setStatus('SUCCESS', 'Done')
             return msg
         } catch (e) {
-            const response = e.response
-            if (!response) {
-                console.log('Unknown Error', e)
-                msg.isError = true
-                msg.error = {
-                    reason: 'UNKNOWN_ERROR'
-                }
-                this.setStatus('ERROR', 'Unknown error, unrelated to API')
-                return msg
-            }
-
-            if (parseInt(response.status) === 401) {
-                const { access_token } = await this.refreshTokens()
-                request.headers.Authorization = `Bearer ${access_token}`
-                try {
-                    msg.spotifyState = await this.getStateFromAPI(request)
-                    return msg
-                } catch (e) {
-                    console.log('What just happened?')
-                    console.log(e)
-                }
-            }
-
-            this.setStatus('ERROR', 'Unknown error')
             if (e.response) {
                 console.log('config', e.config)
                 console.log('RESPONSE STATUS', e.response.status)
@@ -99,12 +50,10 @@ class GetPlaybackState extends Node {
             } else {
                 console.log(e)
             }
-            msg.isError = true
-            msg.error = {
-                reason: 'UNKNOWN_ERROR',
-                uri: uri
-            }
 
+            msg.__isError = true
+            msg.__error = e
+            this.setStatus('ERROR', e.message)
             return msg
         }
     }
