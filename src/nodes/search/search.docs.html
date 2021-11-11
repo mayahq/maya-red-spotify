@@ -1,25 +1,86 @@
-<h2>Description</h2>
-<p>Query opens tabs based on criteria like URL, muted status</p>
+<h2 data-type="description-title">Description</h2>
+<p data-type="description-summary">Search through songs, albums, artists and playlists</p>
 
-<h2>Config</h2>
+<h2 data-type="inputs">Inputs</h2>
 <dl class="message-properties">
 
-    <dt>payload<span class="property-type">various</span></dt>
-    <dd>The configured payload of the message.</dd>
+    <dt>
+        <span class="property-name">query</span>
+        <span class="property-type">string</span>
+    </dt>
+    <dd>
+        The search query (what you'd type into the search box if you were to search directly in the spotify app)
+    </dd>
 
-    <dt class="optional">topic <span class="property-type">string</span></dt>
-    <dd>An optional property</dd>
+    <dt>
+        <span class="property-name">searchType</span>
+        <span class="property-type">string</span>
+    </dt>
+    <dd>
+        Comma-separated list of the types of resources you'd like to search through. The possible values of resource types are 
+        "artist", "track", "album", and "playlist". If you want to search for playlists, you cannot include any other resource 
+        type in the search, i.e., "playlist,track" is not a valid value.
+    </dd>
 
 </dl>
 
 
-<h2>Outputs</h2>
+<h2 data-type="outputs">Outputs</h2>
 <dl class="message-properties">
 
-    <dt>payload<span class="property-type">various</span></dt>
-    <dd>The configured payload of the message.</dd>
+    <dt>
+        <span class="property-name">searchResults</span>
+        <span class="property-type">JSON object</span>
+    </dt>
+    <dd>
+        Contains the search results. Read below to see what the search results contain.
+    </dd>
 
-    <dt class="optional">topic <span class="property-type">string</span></dt>
-    <dd>An optional property</dd>
-    
 </dl>
+
+<h2>Search result structure</h2>
+<p>The search results can contain a list of Track, Artist, Album and Playlist objects. Here's what you can find in each of these objects -</p>
+
+<h3>Tracks</h3>
+<p>A single track will have this structure. There can be multiple tracks in the search results array</p>
+<ul>
+    <li>type: always equal to "track"</li>
+    <li>name: name of the track</li>
+    <li>artists: comma-separated list of artists in the track</li>
+    <li>uri: spotify URI of the track</li>
+    <li>score: numeric value representing how relevant the track is with respect to the search</li>
+    <li>images: array of image URLs for the track's cover art, by resolution. May not always exist</li>
+    <li>imageUrl: image URL of the smallest-resolution available image of the track's cover art</li>
+</ul>
+
+<h3>Artists</h3>
+<p>A single artist will have this structure. There can be multiple artists in the search results array</p>
+<ul>
+    <li>type: always equal to "artist"</li>
+    <li>name: name of the artist</li>
+    <li>uri: spotify URI of the artist</li>
+    <li>score: numeric value representing how relevant the artist is with respect to the search</li>
+    <li>images: array of image URLs for the artist's profile photo, by resolution. May not always exist</li>
+    <li>imageUrl: image URL of the smallest-resolution available image of the artist's profile photo</li>
+</ul>
+
+<h3>Albums</h3>
+<p>A single album will have this structure. There can be multiple albums in the search results array</p>
+<ul>
+    <li>type: always equal to "album"</li>
+    <li>name: name of the album</li>
+    <li>artists: comma-separated list of artists in the album</li>
+    <li>uri: spotify URI of the album</li>
+    <li>images: array of image URLs for the album's cover art, by resolution. May not always exist</li>
+    <li>imageUrl: image URL of the smallest-resolution available image of the album's cover art</li>
+</ul>
+
+<h3>Playlists</h3>
+<p>A single playlist will have this structure. There can be multiple playlists in the search results array</p>
+<ul>
+    <li>type: always equal to "playlist"</li>
+    <li>name: name of the playlist</li>
+    <li>uri: spotify URI of the playlist</li>
+    <li>images: array of image URLs for the track's album art, by resolution. May not always exist</li>
+    <li>imageUrl: image URL of the smallest-resolution available image of the track's album art</li>
+</ul>

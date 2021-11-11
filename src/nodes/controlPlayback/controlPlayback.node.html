@@ -174,29 +174,90 @@
 </script>
 
 <script type="text/html" data-help-name="control-playback">
-    <h2>Description</h2>
-    <p>Query opens tabs based on criteria like URL, muted status</p>
+    <h2 data-type="description-title">Description</h2>
+    <p data-type="description-summary">Control Spotify playback - play, pause, skip, etc.</p>
 
-    <h2>Config</h2>
+    <p>
+        You can use this node to toggle shuffle or repeat, play, pause, resume and skip songs, and add songs to queue.
+    </p>
+
+    <h2 data-type="inputs">Properties</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">action</span>
+            <span class="property-type">enum</span>
+        </dt>
+        <dd>
+            The action that the node will perform. The actions "play", "pause", "resume" and "skip" are obvious.
+            See below for "toggleRepeat", "toggleShuffle" and "addToQueue".
+        </dd>
     </dl>
 
-
-    <h2>Outputs</h2>
+    <h3>How "toggleRepeat" works</h3>
+    <p>
+        When you set the action to "toggleRepeat", you will also additionally need to specify the repeatMode property.
+        The property can have the following values (you will need to type these out in the field) -
+    </p>
     <dl class="message-properties">
+        <dt>
+            <span class="property-name">track</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            Set repeatMode to "track" to repeat the currently playing track
+        </dd>
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
+        <dt>
+            <span class="property-name">context</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            Set repeatMode to "context" to repeat the currently playing context, i.e., repeat currently playing album,
+            playlist, etc.
+        </dd>
 
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">off</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            Set repeatMode to "off" to turn off repeat.
+        </dd>
     </dl>
+
+    <h3>How "toggleShuffle" works</h3>
+    <p>
+        When you set the action to "toggleShuffle", you will also additionally need to specify the shuffleMode property.
+        The property can have the following values (you will need to type these out in the field) -
+    </p>
+    <dl class="message-properties">
+        <dt>
+            <span class="property-name">true</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            Set shuffleMode to "true" to turn shuffle on.
+        </dd>
+
+        <dt>
+            <span class="property-name">false</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            Set shuffleMode to "false" to turn shuffle off.
+        </dd>
+    </dl>
+
+    <h3>How "addToQueue" works</h3>
+    <p>
+        When you set the action to "addToQueue", you will also additionally need to specify the trackUri property. This
+        corresponds to the URI of the track (for example, <i>spotify:track:4iV5W9uYEdYUVa79Axb7Rh</i>) that you want to add to the queue.
+        You can read more about track URIs on Spotify <a href="https://community.spotify.com/t5/FAQs/What-s-a-Spotify-URI/ta-p/919201">here</a>.
+    </p>
+
+    <h2 data-type="outputs">Outputs</h2>
+    <p>
+        This node does not have any outputs, i.e., it does not add or modify any properties to the msg object.
+    </p>
 </script>

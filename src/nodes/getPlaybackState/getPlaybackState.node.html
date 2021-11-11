@@ -51,29 +51,40 @@
 </script>
 
 <script type="text/html" data-help-name="get-playback-state">
-    <h2>Description</h2>
-    <p>Query opens tabs based on criteria like URL, muted status</p>
+    <h2 data-type="description-title">Description</h2>
+    <p data-type="description-summary">Get information about what the user is playing and how</p>
 
-    <h2>Config</h2>
+    <p>
+        You can use this node to get playback state, i.e., information like what the user is playing, which device they
+        are using, whether their repeat mode is on, etc.
+    </p>
+
+    <h2 data-type="inputs">Properties</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">stateType</span>
+            <span class="property-type">enum</span>
+        </dt>
+        <dd>
+            Use "playback" if you want to get the current track or episode being played (corresponding to <a>this API</a>).
+            Use "playerState" if you want to get info about the current state of playback like whether shuffle is on, which device
+            the user is using, etc.
+        </dd>
     </dl>
 
 
-    <h2>Outputs</h2>
+    <h2 data-type="outputs">Outputs</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">spotifyState</span>
+            <span class="property-type">JSON object</span>
+        </dt>
+        <dd>
+            Contains the requested information about playback state. <a href="https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track">This page</a>
+            describes what the object will contain if stateType is "playback". <a href="https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback"> This page</a>
+            describes what the object will contain if stateType is "playerState".
+        </dd>
     </dl>
 </script>

@@ -20,6 +20,7 @@ async function refresh(node) {
             // const newTokens = await refreshTokens({ access_token, refresh_token })
             const newTokens = await node.tokens.refresh({ access_token, refresh_token })
             if (newTokens.error) {
+                console.log('There was an error:', newTokens.error)
                 return {
                     access_token: null,
                     refresh_token: null,

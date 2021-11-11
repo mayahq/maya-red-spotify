@@ -123,29 +123,54 @@
 </script>
 
 <script type="text/html" data-help-name="playlist">
-    <h2>Description</h2>
-    <p>Query opens tabs based on criteria like URL, muted status</p>
+    <h2 data-type="description-title">Description</h2>
+    <p data-type="description-summary">Perform playlist operations on spotify playlists</p>
 
-    <h2>Config</h2>
+    <p>
+        Right now the node has only one function, which is to add tracks to a playlist. In the future there may be more.
+    </p>
+
+    <h2 data-type="inputs">Inputs</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
+        <dt>
+            <span class="property-name">action</span>
+            <span class="property-type">enum</span>
+        </dt>
+        <dd>
+            Right now there is only one action available, which is to add tracks to a playlist. So you can't choose any other value.
+        </dd>
 
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
+        <dt>
+            <span class="property-name">tracks</span>
+            <span class="property-type">string | array[string]</span>
+        </dt>
+        <dd>
+            Single track URI or an array of them. The tracks corresponding to given URIs will be added to the playlist.
+        </dd>
+
+        <dt>
+            <span class="property-name">playlistId</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            ID of playlist to which the songs should be added. You can get this from the app, or dynamically get this from the response
+            to a playlist search query (see search node documentation).
+        </dd>
 
     </dl>
 
 
-    <h2>Outputs</h2>
+    <h2 data-type="outputs">Outputs</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">playlistSnapshotId</span>
+            <span class="property-type">JSON object</span>
+        </dt>
+        <dd>
+            A snapshot ID for the playlist. You can learn more about snapshot IDs
+            <a href="https://developer.spotify.com/documentation/general/guides/working-with-playlists/#version-control-and-snapshots">here</a>
+        </dd>
     </dl>
 </script>

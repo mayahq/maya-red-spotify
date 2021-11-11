@@ -66,29 +66,26 @@
 </script>
 
 <script type="text/html" data-help-name="play">
-    <h2>Description</h2>
-    <p>Query opens tabs based on criteria like URL, muted status</p>
+    <h2 data-type="description-title">Description</h2>
+    <p data-type="description-summary">Play a song, album, playlist, or artist</p>
 
-    <h2>Config</h2>
+    <h2 data-type="inputs">Inputs</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">uri</span>
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+            The URI of the spotify resource you want to play. For example, <i>spotify:track:4iV5W9uYEdYUVa79Axb7Rh</i> is a URI for a
+            track. Songs, artists, albums and playlists all have unique URIs associated with them. You can read more about URIs
+            <a href="https://community.spotify.com/t5/FAQs/What-s-a-Spotify-URI/ta-p/919201">here</a>
+        </dd>
     </dl>
 
 
-    <h2>Outputs</h2>
-    <dl class="message-properties">
-
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
-    </dl>
+    <h2 data-type="outputs">Outputs</h2>
+    <p>
+        This node does not have any outputs. If the play operation is successful, it simply forwards the message.
+    </p>
 </script>

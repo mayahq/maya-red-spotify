@@ -360,29 +360,59 @@
 </script>
 
 <script type="text/html" data-help-name="library">
-    <h2>Description</h2>
-    <p>Query opens tabs based on criteria like URL, muted status</p>
+    <h2 data-type="description-title">Description</h2>
+    <p data-type="description-summary">Like or unlike songs and albums, query liked songs and albums</p>
 
-    <h2>Config</h2>
+    <p>
+        Spotify lets you to "like" songs or albums, thus adding them to your personal library. This node
+        allows you to do just that, without opening the app.
+    </p>
+
+    <h2 data-type="inputs">Properties</h2>
+    <p>
+        There's only one property - "action". If it's value is "likeSong", "likeAlbum", "unlikeSong" or "unlikeAlbum",
+        you need to provide the corresponding song or album ID in the additional field (Song ID or Album ID).
+    </p>
+    <p>
+        If action is "getLikedSongs" or "getLikedAlbums", you have to set two additional properties - "limit" and "offset".
+    </p>
+
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
+        <dt>
+            <span class="property-name">limit</span>
+            <span class="property-type">number</span>
+        </dt>
+        <dd>
+            The number of liked songs or albums you want to fetch. For example, if the value is 12, it'll fetch 12 liked songs
+            or albums. The maximum allowed value for this property is 50.
+        </dd>
 
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
+        <dt>
+            <span class="property-name">offset</span>
+            <span class="property-type">number</span>
+        </dt>
+        <dd>
+            The number of songs or albums to skip when fetching. For example if offset is 0 and limit is 10, the node will fetch
+            the latest 10 liked songs. If you then change the offset to 10, the node will fetch the next 10 liked songs.
+        </dd>
 
     </dl>
 
 
-    <h2>Outputs</h2>
+    <h2 data-type="outputs">Outputs</h2>
+    <p>
+        If the action is not one of "getLikedSongs" or "getLikedAlbums", there is no output, i.e., the node does not add or change
+        any properties on the msg object. Otherwise, it adds the following properties -
+    </p>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
-
+        <dt>
+            <span class="property-name">searchResults</span>
+            <span class="property-type">JSON object</span>
+        </dt>
+        <dd>
+            A list of tracks if action is "getLikedSongs", a list of albums if action is "getLikedAlbums"
+        </dd>
     </dl>
 </script>
