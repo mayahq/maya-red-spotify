@@ -22,5 +22,25 @@
       "playlist": "src/nodes/playlist/playlist.node.js",
       "library": "src/nodes/library/library.node.js"
     }
+  },
+  "mayaDetails": {
+    "name": "spotify-module",
+    "version": "2.0.1",
+    "description": "Maya module to control Spotify",
+    "author": "dush-t",
+    "type": "git",
+    "needsUserProfile": true,
+    "configType": {
+      "name": "Spotify Authentication",
+      "oid": "61973fea53546c43979f67dc"
+    },
+    "thumbnail": "",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/mayahq/maya-red-spotify.git"
+    },
+    "origin": {
+      "moduleId": "618e6382fa821f018deafb24"
+    }
   }
 }
