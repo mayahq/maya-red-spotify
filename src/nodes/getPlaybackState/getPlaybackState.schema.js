@@ -1,3 +1,4 @@
+// Playback node for Spotify
 const {
     Node,
     Schema,
