@@ -3,10 +3,10 @@ const refresh = require('./refresh')
 
 async function makeRequestWithRefresh(node, request, { force = false } = {}) {
     try {
-        // Testing token refresh
-        const e = new Error('')
-        e.response = { status: 401 }
-        throw e
+        // // Testing token refresh
+        // const e = new Error('')
+        // e.response = { status: 401 }
+        // throw e
 
         const response = await axios(request)
         return response
