@@ -28,12 +28,13 @@ async function refresh(node, { force = false } = {}) {
 
         const toks = await tokenControl.lockTokens(async (tokens) => {
             console.log('Acquired remote token lock')
-            const { access_token, refresh_token, lastUpdated } = tokens
+            const { access_token, refresh_token, lastUpdated, referenceId } = tokens
 
             if (Date.now() - lastUpdated < 1*HOUR - 2*MINUTE) {
                 console.log('Tokens were already updated, no need to refresh')
                 console.log('New tokens:', tokens)
                 tokenControl.vals = { ...(tokenControl.vals), ...tokens }
+                await node.tokens.setLocal(tokens, { lock: false, referenceId })
                 return tokens
             }
 
