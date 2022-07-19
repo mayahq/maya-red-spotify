@@ -4,7 +4,7 @@ const refresh = require('./refresh')
 async function makeRequestWithRefresh(node, request, { force = false } = {}) {
     try {
         // // Testing token refresh
-        // const e = new Error('')
+        // const e = new Error('Simulating request failure')
         // e.response = { status: 401 }
         // throw e
 
@@ -13,7 +13,8 @@ async function makeRequestWithRefresh(node, request, { force = false } = {}) {
     } catch (e) {
         if (e.response && parseInt(e.response.status) === 401) {
             const start = Date.now()
-            const { access_token, fromCache } = await refresh(node, { force })
+            const { tokens, fromCache } = await refresh(node, { force })
+            const { access_token } = tokens
             const end = Date.now()
 
             console.log(`Token refresh took ${end-start}ms`)
@@ -32,7 +33,8 @@ async function makeRequestWithRefresh(node, request, { force = false } = {}) {
                 // force a refresh of the cloud token and attempt the request with that.
                 if (!fromCache) throw e
                 if (e.response && parseInt(e.response.status) === 401) {
-                    const { access_token } = await refresh(node, { force: true })
+                    const { tokens } = await refresh(node, { force: true })
+                    const { access_token } = tokens
                     request.headers.Authorization = `Bearer ${access_token}`
                     const response = await axios(request)
                     return response
