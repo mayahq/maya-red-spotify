@@ -8,10 +8,15 @@ async function makeRequestWithRefresh(node, request, { force = false } = {}) {
         // e.response = { status: 401 }
         // throw e
 
+        const e = new Error('test')
+        e.response = { status: 401 }
+        throw e
         const response = await axios(request)
         return response
     } catch (e) {
         if (e.response && parseInt(e.response.status) === 401) {
+            force = true
+            console.log('#### Got error, now refreshing ####')
             const start = Date.now()
             const { tokens, fromCache } = await refresh(node, { force })
             const { access_token } = tokens
