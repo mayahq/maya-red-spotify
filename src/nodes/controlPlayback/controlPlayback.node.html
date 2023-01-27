@@ -10,19 +10,22 @@
                 value: false
             },
             shuffleMode: {
-                value: "true"
+                value: "true",
+                required: false
             },
             payloadTypeshuffleMode: {
                 value: "str"
             },
             repeatMode: {
-                value: "off"
+                value: "off",
+                required: false
             },
             payloadTyperepeatMode: {
                 value: "str"
             },
             trackUri: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypetrackUri: {
                 value: "str"
@@ -96,8 +99,14 @@
 
 
             const actionFieldSetNames = ["resume", "pause", "next", "previous", "toggleShuffle", "toggleRepeat", "addToQueue"]
+            // const nameMap = JSON.parse('{"toggleShuffle":"Toggle Shuffle","toggleRepeat":"Toggle Repeat","addToQueue":"Add to Queue"}')
+            const nameMap = {
+                "toggleShuffle": "Toggle Shuffle",
+                "toggleRepeat": "Toggle Repeat",
+                "addToQueue": "Add to Queue"
+            }
             actionFieldSetNames.forEach((fieldSetName) => {
-                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(nameMap[fieldSetName] ? nameMap[fieldSetName] : fieldSetName))
             })
 
             $("#node-input-action").val(this.action)

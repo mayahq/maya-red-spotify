@@ -21,6 +21,11 @@ class ControlPlayback extends Node {
         isConfig: false,
         fields: {
             action: new fields.SelectFieldSet({
+                optionNameMap: { 
+                    toggleShuffle: 'Toggle Shuffle', 
+                    toggleRepeat: 'Toggle Repeat', 
+                    addToQueue: 'Add to Queue' 
+                },
                 fieldSets: {
                     resume: {},
                     pause: {},
@@ -43,6 +48,7 @@ class ControlPlayback extends Node {
     })
 
     async onMessage(msg, vals) {
+        console.log('vals', vals)
 
         let request = {
             method: 'PUT',

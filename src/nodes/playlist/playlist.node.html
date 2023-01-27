@@ -10,13 +10,15 @@
                 value: false
             },
             tracks: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypetracks: {
                 value: "str"
             },
             playlistId: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypeplaylistId: {
                 value: "str"
@@ -72,8 +74,10 @@
 
 
             const actionFieldSetNames = ["addTracks"]
+            // const nameMap = JSON.parse('{}')
+            const nameMap = {}
             actionFieldSetNames.forEach((fieldSetName) => {
-                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(nameMap[fieldSetName] ? nameMap[fieldSetName] : fieldSetName))
             })
 
             $("#node-input-action").val(this.action)

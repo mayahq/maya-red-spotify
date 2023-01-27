@@ -10,49 +10,57 @@
                 value: false
             },
             lSongId: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypelSongId: {
                 value: "str"
             },
             lAlbumId: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypelAlbumId: {
                 value: "str"
             },
             uSongId: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypeuSongId: {
                 value: "str"
             },
             uAlbumId: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypeuAlbumId: {
                 value: "str"
             },
             sLimit: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypesLimit: {
                 value: "num"
             },
             sOffset: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypesOffset: {
                 value: "num"
             },
             aLimit: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypeaLimit: {
                 value: "num"
             },
             aOffset: {
-                value: ""
+                value: "",
+                required: false
             },
             payloadTypeaOffset: {
                 value: "num"
@@ -216,8 +224,10 @@
 
 
             const actionFieldSetNames = ["likeSong", "likeAlbum", "unlikeSong", "unlikeAlbum", "getLikedSongs", "getLikedAlbums"]
+            // const nameMap = JSON.parse('{}')
+            const nameMap = {}
             actionFieldSetNames.forEach((fieldSetName) => {
-                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+                $("#node-input-action").append($("<option></option>").attr("value", fieldSetName).text(nameMap[fieldSetName] ? nameMap[fieldSetName] : fieldSetName))
             })
 
             $("#node-input-action").val(this.action)
